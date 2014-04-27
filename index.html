@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Ajax Shoutbox</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/custom.css" />
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+    </script>
+    
+    <script>
+      // Insert your JavaScript here (or externalize to .js file)
+
+      function createCookie(name,value,days) {
+        var date = new Date();
+        date.setTime(date.getTime()+(days*24*60*60*1000));
+        var expires = "; expires="+date.toGMTString();
+        document.cookie = name+"="+value+expires+"; path=/";
+      }
+
+      function readCookie(name) {
+        var nameSet = name + "=";
+        var thing = document.cookie.split(';');
+        for(var i=0;i < thing.length;i++) {
+	  var c = thing[i];
+	  while (c.charAt(0)==' ') c = c.substring(1,c.length);
+	  if (c.indexOf(nameSet) == 0) return c.substring(nameSet.length,c.length);
+	}
+	return null;
+      }
+
+      
+      function getMessages(){
+	$.ajax({
+            type: 'GET',
+            url: 'http://www.csee.umbc.edu/~philk1/d18d91faa3ac7bf4/javascript/p2/server/shout.php',
+            dataType: "html",
+            success: function(response){
+
+              var data = JSON.parse(response);
+              var dataArray = data['data'];
+              dataArray.reverse();
+              var temp = "";
+              for (var i=0; i<dataArray.length; i++){
+                var angel = /0:-\)/g; var crying = /:'\(/g; var devilish = />:-\)/g; var glasses = /B-\)/g;
+                var grin = /:D/g; var kiss = /:-\*/g; var monkey = /:-\(\|\)/g;
+                var plain = /:-\|/g; var sad = /:-\(/g; var smileBig = /:-D/g;
+                var smile = /:-\)/g; var surprise = /:-0/g; var wink = /;-\)/g;
+                var newstr = dataArray[i].message.replace(angel, "<img src="+document.getElementById("angel").src+" alt='angel' />");
+                newstr = newstr.replace(crying, "<img src="+document.getElementById("crying").src+" alt = 'crying' />");
+                newstr = newstr.replace(devilish, "<img src="+document.getElementById("devilish").src+" alt = 'devilish' />");
+                newstr = newstr.replace(glasses, "<img src="+document.getElementById("glasses").src+" alt = 'glasses' />");
+                newstr = newstr.replace(grin, "<img src="+document.getElementById("grin").src+" alt = 'grin' />");
+                newstr = newstr.replace(kiss, "<img src="+document.getElementById("kiss").src+" alt = 'kiss' />");
+                newstr = newstr.replace(monkey, "<img src="+document.getElementById("monkey").src+" alt = 'monkey' />");
+                newstr = newstr.replace(plain, "<img src="+document.getElementById("plain").src+" alt = 'plain' />");
+                newstr = newstr.replace(sad, "<img src="+document.getElementById("sad").src+" alt = 'sad' />");
+                newstr = newstr.replace(smileBig, "<img src="+document.getElementById("smile-big").src+" alt = 'smile-big' />");
+                newstr = newstr.replace(smile, "<img src="+document.getElementById("smile").src+" alt = 'smile' />");
+                newstr = newstr.replace(surprise, "<img src="+document.getElementById("surprise").src+" alt = 'surprise' />");
+                newstr = newstr.replace(wink, "<img src="+document.getElementById("wink").src+" alt = 'wink' />");
+                temp+='<div class="shout" id="shout">['+dataArray[i].time+'] <strong>'+dataArray[i].name+'</strong>:  '+newstr+'</div>';
+
+              }
+              $('#messages').html(temp);
+              $('#message').val("");
+              $('#message').focus();
+            }
+          });
+
+      }
+
+
+      $(function() {
+        
+        getMessages();
+	var t = setInterval(getMessages, 15000);
+	
+
+	$("#name").val(readCookie("person"));
+
+        $("#clear").click(function(){
+          $("#message").val("");
+          $("#message").focus();
+        });
+
+        $("#submit").click(function(){
+          var message = $("#message").val();
+          var name = $("#name").val();
+      
+          if(message=="" && name==""){
+            alert("Type a name and a message"); 
+	    $("#name").focus()
+          } 
+	  else if (message==""){
+	    alert("Type a message");
+	    $("#message").focus();
+	  }
+	  else if (name==""){
+            alert("Type a name");
+	    $("#name").focus();
+	  }
+      
+          createCookie("person", name, 7);
+          
+
+          $.ajax({
+            type: 'POST',
+            url: 'http://www.csee.umbc.edu/~philk1/d18d91faa3ac7bf4/javascript/p2/server/shout.php',
+            data: {name : $("#name").val(), message : $("#message").val()},
+            dataType: "html",
+            success: function(response){
+             
+              var data = JSON.parse(response);
+              var dataArray = data['data'];
+              dataArray.reverse();
+              var temp = "";
+              for (var i=0; i<dataArray.length; i++){
+		var angel = /0:-\)/g; var crying = /:'\(/g; var devilish = />:-\)/g; var glasses = /B-\)/g;
+                var grin = /:D/g; var kiss = /:-\*/g; var monkey = /:-\(\|\)/g;
+                var plain = /:-\|/g; var sad = /:-\(/g; var smileBig = /:-D/g;
+                var smile = /:-\)/g; var surprise = /:-0/g; var wink = /;-\)/g;
+		var newstr = dataArray[i].message.replace(angel, "<img src="+document.getElementById("angel").src+" alt='angel' />");
+		newstr = newstr.replace(crying, "<img src="+document.getElementById("crying").src+" alt = 'crying' />");
+		newstr = newstr.replace(devilish, "<img src="+document.getElementById("devilish").src+" alt = 'devilish' />");
+		newstr = newstr.replace(glasses, "<img src="+document.getElementById("glasses").src+" alt = 'glasses' />");
+		newstr = newstr.replace(grin, "<img src="+document.getElementById("grin").src+" alt = 'grin' />");
+		newstr = newstr.replace(kiss, "<img src="+document.getElementById("kiss").src+" alt = 'kiss' />");
+		newstr = newstr.replace(monkey, "<img src="+document.getElementById("monkey").src+" alt = 'monkey' />");
+		newstr = newstr.replace(plain, "<img src="+document.getElementById("plain").src+" alt = 'plain' />");
+		newstr = newstr.replace(sad, "<img src="+document.getElementById("sad").src+" alt = 'sad' />");
+		newstr = newstr.replace(smileBig, "<img src="+document.getElementById("smile-big").src+" alt = 'smile-big' />");
+		newstr = newstr.replace(smile, "<img src="+document.getElementById("smile").src+" alt = 'smile' />");
+		newstr = newstr.replace(surprise, "<img src="+document.getElementById("surprise").src+" alt = 'surprise' />");
+		newstr = newstr.replace(wink, "<img src="+document.getElementById("wink").src+" alt = 'wink' />");
+ 		temp+='<div class="shout" id="shout">['+dataArray[i].time+'] <strong>'+dataArray[i].name+'</strong>:  '+newstr+'</div>';
+                
+	      }
+              $('#messages').html(temp);
+              $('#message').val("");
+              $('#message').focus();
+            }
+          }); 
+          
+        });
+	
+	$('#angel').click(function(){
+	  var temp = $("#message").val();
+          temp += "0:-)";
+	  $("#message").val(temp);
+          $("#message").focus();
+        });
+        $('#crying').click(function(){
+          var temp = $("#message").val();
+          temp += ":'(";
+          $("#message").val(temp);
+          $("#message").focus();
+        });
+        $('#devilish').click(function(){
+          var temp = $("#message").val();
+          temp += ">:-)";
+          $("#message").val(temp);
+          $("#message").focus();
+        });
+        $('#glasses').click(function(){
+          var temp = $("#message").val();
+          temp += "B-)";
+          $("#message").val(temp);
+          $("#message").focus();
+        });
+        $('#grin').click(function(){
+          var temp = $("#message").val();
+          temp += ":D";
+          $("#message").val(temp);
+          $("#message").focus();
+        });
+        $('#kiss').click(function(){
+          var temp = $("#message").val();
+          temp += ":-*";
+          $("#message").val(temp);
+          $("#message").focus();
+        });
+        $('#monkey').click(function(){
+          var temp = $("#message").val();
+          temp += ":-(|)";
+          $("#message").val(temp);
+          $("#message").focus();
+        });
+        $('#plain').click(function(){
+          var temp = $("#message").val();
+          temp += ":-|";
+          $("#message").val(temp);
+          $("#message").focus();
+        });
+        $('#sad').click(function(){
+          var temp = $("#message").val();
+          temp += ":-(";
+          $("#message").val(temp);
+          $("#message").focus();
+        });
+        $('#smile-big').click(function(){
+          var temp = $("#message").val();
+          temp += ":-D";
+          $("#message").val(temp);
+          $("#message").focus();
+        });
+        $('#smile').click(function(){
+          var temp = $("#message").val();
+          temp += ":-)";
+          $("#message").val(temp);
+          $("#message").focus();
+        });
+        $('#surprise').click(function(){
+          var temp = $("#message").val();
+          temp += ":-0";
+          $("#message").val(temp);
+          $("#message").focus();
+        });
+        $('#wink').click(function(){
+          var temp = $("#message").val();
+          temp += ";-)";
+          $("#message").val(temp);
+          $("#message").focus();
+        });
+
+						
+      });
+      
+            
+       
+
+    </script>
+  </head>
+  <body>
+
+    <!-- the title bar at the top -->
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <span class="brand">Ajax Shoutbox</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <form>
+      
+        <!-- this contains the messages that are posted by all users -->
+	<div class="control-group">
+          <div class="faux-label">Messages:</div>
+          <div class="controls">
+
+	    <!-- the actual messages go in here -->
+            <div id="messages">
+
+	      <!-- below are some sample shouts, you'll want to eventually remove
+                   but they're here to show you how they were formatted -->
+	      <div class="shout" id="shout">
+              </div>
+	    
+	    </div>
+
+          </div>
+	</div>
+
+	<!-- the actual name input -->
+	<div class="control-group">
+          <label class="control-label" for="name">Name:</label>
+          <div class="controls">
+            <input type="text" class="stretch" id="name" />
+          </div>
+	</div>
+
+	<!-- the actual messages textarea -->
+	<div class="control-group">
+          <label class="control-label" for="message">Message:</label>
+          <div class="controls">
+            <textarea class="stretch" id="message" rows="3"></textarea>
+          </div>
+	</div>
+
+	<!-- the row of emotes -->
+	<div class="emoticons">
+	  <span class="btn">
+	    <img src="img/face-angel.png" alt="angel" id="angel"/>
+	  </span>
+	  <span class="btn">
+	    <img src="img/face-crying.png" alt="crying" id="crying"/>
+	  </span>
+	  <span class="btn">
+	    <img src="img/face-devilish.png" alt="devilish" id="devilish"/>
+	  </span>
+	  <span class="btn">
+	    <img src="img/face-glasses.png" alt="glasses" id="glasses"/>
+	  </span>
+	  <span class="btn">
+	    <img src="img/face-grin.png" alt="grin" id="grin"/>
+	  </span>
+	  <span class="btn">
+	    <img src="img/face-kiss.png" alt="kiss" id="kiss"/>
+	  </span>
+	  <span class="btn">
+	    <img src="img/face-monkey.png" alt="monkey" id="monkey"/>
+	  </span>
+	  <span class="btn">
+	    <img src="img/face-plain.png" alt="plain" id="plain"/>
+	  </span>
+	  <span class="btn">
+	    <img src="img/face-sad.png" alt="sad" id="sad"/>
+	  </span>
+	  <span class="btn">
+	    <img src="img/face-smile-big.png" alt="smile-big" id="smile-big"/>
+	  </span>
+	  <span class="btn">
+	    <img src="img/face-smile.png" alt="smile" id="smile"/>
+	  </span>
+	  <span class="btn">
+	    <img src="img/face-surprise.png" alt="surprise" id="surprise"/>
+	  </span>
+	  <span class="btn">
+	    <img src="img/face-wink.png" alt="wink" id="wink"/>
+	  </span>
+	</div>
+
+	<!-- clear and send buttons -->
+	<div class="actions">
+          <input type="button" class="btn btn-large" value="Clear" id="clear" />
+          <input type="button" class="btn btn-large btn-primary" value="Send" id="submit" />
+	</div>
+
+      </form>
+
+    </div>
+  </body>
+</html>
